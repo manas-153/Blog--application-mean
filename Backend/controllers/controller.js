@@ -246,20 +246,52 @@ const getCommentByPostId = async(req,res)=>
     {
         let postId=req.body.postId;
 
-        let comments=await commentModel.find({postId:postId},{_id:0});
-
-         comments.forEach( async item=>
+        commentModel.aggregate([
             {
-                let user=await userModel.find({_id:item.userId},{_id:0,name:1});
-                console.log(user);
-            })
+              $match: {userId: ObjectId(`${postId}`)} // Replace "post_id_1" with the desired post ID
+            },
+            {
+              $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "post",
+                as: "comments"
+              }
+            },
+            {
+              $unwind: "$comments"
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "comments.user",
+                foreignField: "_id",
+                as: "comments.user"
+              }
+            },
+            {
+              $unwind: "$comments.user"
+            },
+            {
+              $project: {
+                "title": 1,
+                "content": 1,
+                "comments._id": 1,
+                "comments.comment": 1,
+                "comments.user.name": 1,
+                "comments.user.email": 1
+              }
+            }
+          ])
+          
 
 
         res.json({
             status:"success",
-             comments:{
-                comments
-             }
+                comments:{
+                   comments
+                }
+             
         })
 
     }
