@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers,createUser,createPost,getPostByAuthodId,getAllPosts,addCategory,addComment,getAllUserInfo,getCommentByPostId} = require('../controllers/controller');
+const { getAllUsers,createUser,createPost,getPostByAuthodId,getAllPosts,addCategory,addComment,getAllUserInfo,getCommentByPostIdWithUserInfo} = require('../controllers/controller');
 
 const router=express.Router();
 
@@ -24,6 +24,6 @@ router.post('/addCategory',addCategory);
 // comment routing 
 
 router.post('/addComment',addComment);
-router.post('/getCommentByPostId',getCommentByPostId);
+router.post('/getCommentByPostIdWithUserInfo',getCommentByPostIdWithUserInfo);
 
 module.exports=router;

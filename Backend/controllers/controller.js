@@ -1,3 +1,4 @@
+const mongoose=require('mongoose');
 const {userModel,postModel,categoryModel, commentModel}= require('../database/schems');
 
 // user data constrollers 
@@ -213,6 +214,8 @@ const addCategory = async(req,res)=>
 }
 
 
+
+
 // comment controllers
 
 const addComment = async(req,res)=>
@@ -240,57 +243,50 @@ const addComment = async(req,res)=>
     }
 }
 
-const getCommentByPostId = async(req,res)=>
+const getCommentByPostIdWithUserInfo = async(req,res)=>
 {
     try
     {
         let postId=req.body.postId;
 
-        commentModel.aggregate([
+    
+
+        const comments = await commentModel.aggregate([
             {
-              $match: {userId: ObjectId(`${postId}`)} // Replace "post_id_1" with the desired post ID
+              $match:{postId:new mongoose.Types.ObjectId(postId)} 
             },
             {
               $lookup: {
-                from: "comments",
-                localField: "_id",
-                foreignField: "post",
-                as: "comments"
-              }
+                from:"users",
+                localField:"authorId",
+                foreignField:"_id",
+                as:"userDetails"
+              },
             },
+
+            { $unwind: '$userDetails' },
+
             {
-              $unwind: "$comments"
+
+                $project: {
+                         _id:0,   
+                         postId :1,
+                         content:1,
+                         username: "$userDetails.username",
+                         avatar:"$userDetails.avatar",
+                         fullName:"$userDetails.fullName"
+    
+                      }
             },
-            {
-              $lookup: {
-                from: "users",
-                localField: "comments.user",
-                foreignField: "_id",
-                as: "comments.user"
-              }
-            },
-            {
-              $unwind: "$comments.user"
-            },
-            {
-              $project: {
-                "title": 1,
-                "content": 1,
-                "comments._id": 1,
-                "comments.comment": 1,
-                "comments.user.name": 1,
-                "comments.user.email": 1
-              }
-            }
-          ])
+          
+        ]);
+
           
 
 
         res.json({
             status:"success",
-                comments:{
-                   comments
-                }
+            comments
              
         })
 
@@ -306,11 +302,4 @@ const getCommentByPostId = async(req,res)=>
 
 
 
-
-
-
-
-
-
-
-module.exports= {getAllUsers,createUser,createPost,getPostByAuthodId,getAllPosts,addCategory,addComment,getAllUserInfo,getCommentByPostId};
+module.exports= {getAllUsers,createUser,createPost,getPostByAuthodId,getAllPosts,addCategory,addComment,getAllUserInfo,getCommentByPostIdWithUserInfo};

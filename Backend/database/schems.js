@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const userSchema= new mongoose.Schema({
+
+     fullName:{
+      type:String,
+      required:true,
+     },
     username: {
         type: String,
         required: true,
@@ -110,8 +115,8 @@ const commentSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-  userId:{
-    type:String,
+  authorId:{
+    type:mongoose.Schema.Types.ObjectId,
     required:true
   },
   createdAt:{
