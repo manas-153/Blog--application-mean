@@ -2,6 +2,7 @@ const mongoose=require('mongoose');
 const {userModel,postModel,categoryModel, commentModel}= require('../database/schems');
 
 // user data constrollers 
+
 const getAllUsers = async (req,res)=>
 {
     try
@@ -88,21 +89,19 @@ const getAllUserInfo = async(req,res)=>
                 let userId=userInfo[0]._id;
                 let postData=await postModel.find({authorId:userId});
 
-                let commentData=await commentModel.find({userId:userId});
+                let commentData=await commentModel.find({authorId:userId});
 
                 res.json({
                     status:"success",
                     user:{
                         userInfo
                     },
-                    posts:{
-                        postData
-                    },
-                    comments:{
-                        commentData
-                    }
+                    postData,
+
+                    commentData
                 })
             }
+        
 
             else{
 
@@ -172,8 +171,8 @@ const getAllPosts = async(req,res)=>
 {
     try
     {
-        let res_back=await postModel.find();
-        res_back.length ? res.json({status:'success',msg:`${res_back.length} posts found `,data:{res_back}}): res.status(400).json({status:'failed',msg:"no post found"});
+        let res_back=await postModel.find().sort({createdAt:1});
+        res_back.length ? res.json({status:'success',msg:`${res_back.length} posts found `,res_back}): res.status(400).json({status:'failed',msg:"no post found"});
 
     }
     catch(err)
@@ -189,6 +188,7 @@ const getAllPosts = async(req,res)=>
 
 
 // category controllers 
+
 const addCategory = async(req,res)=>
 {
     try

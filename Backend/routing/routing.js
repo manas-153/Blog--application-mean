@@ -1,7 +1,13 @@
 const express = require('express');
+const cors=require('cors');
 const { getAllUsers,createUser,createPost,getPostByAuthodId,getAllPosts,addCategory,addComment,getAllUserInfo,getCommentByPostIdWithUserInfo} = require('../controllers/controller');
 
 const router=express.Router();
+
+
+
+
+router.use(cors());
 
 // user routing 
 router.get('/getAllUsers',getAllUsers);

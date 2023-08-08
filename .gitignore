@@ -1,5 +1,9 @@
-frontend
+.angular
 
 node_modules
 
 .env
+
+favicon.ico
+
+.editorconfig
